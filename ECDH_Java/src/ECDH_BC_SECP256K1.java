@@ -89,21 +89,21 @@ public class ECDH_BC_SECP256K1
 		KeyPairGenerator kpgen = KeyPairGenerator.getInstance("ECDH", "BC");
 		kpgen.initialize(new ECGenParameterSpec("secp256k1"), new SecureRandom());
 
-        if(!FileUtil.IsKeyExist(pathA)) {
-		pairA = kpgen.generateKeyPair();
-		FileUtil.generatorKey(pairA, pathA);
-        } else {
-        	pairA = FileUtil.getSecretKey(pathA);
-        }
+                if(!FileUtil.IsKeyExist(pathA)) {
+			pairA = kpgen.generateKeyPair();
+			FileUtil.generatorKey(pairA, pathA);
+        	} else {
+        		pairA = FileUtil.getSecretKey(pathA);
+        	}
 
 		byte [] dataPrvA = savePrivateKey(pairA.getPrivate());
 		byte [] dataPubA = savePublicKey(pairA.getPublic());
 
 		System.out.println("Alice Prv: " + bytesToHex(dataPrvA));
 		System.out.println("Alice Pub: " + bytesToHex(dataPubA));
-        //This pubkey from openssl
-        String dataC = "021debb5ca31ad676a24ea8580fd42f6fcd10eb46680b78f5474a61791b513dc0e";
-        System.out.println("Bob Pub: " + dataC);
+        	//This pubkey from openssl
+        	String dataC = "021debb5ca31ad676a24ea8580fd42f6fcd10eb46680b78f5474a61791b513dc0e";
+        	System.out.println("Bob Pub: " + dataC);
 		doECDH("Alice's secret: ", dataPrvA, Numeric.hexStringToByteArray(dataC));
 	}
 }
