@@ -31,11 +31,26 @@ int main() {
     unsigned char pubkey2[ECDH_SIZE] = {0x03, 0xc5, 0x63, 0x7e, 0xd4, 0xdd, 0x47, 0x22, 0x7f, 0x46, 0x19, 0x0b, 0x09, 0xa7, 0xb8, 0x2e, 0x9a, 0xac, 0x1e, 0xc7, 0x22, 0x6c, 0x4f, 0x5b, 0xd3, 0xc4, 0x32, 0xbd, 0xbd, 0xc7, 0x67, 0xdb, 0x0a};//This pubkey from JAVA implementation
     unsigned char shared[ECDH_SIZE];  
     int len;  
-  
+    FILE *f  = NULL;
     //Generate Public  
     ecdh = EC_KEY_new();
     ecdh = EC_KEY_new_by_curve_name(NID_secp256k1);
-    EC_KEY_generate_key(ecdh);  
+
+    f = fopen("b.ecc", "rb");
+    if (f == NULL) {
+        f = fopen("b.ecc", "wb");
+        EC_KEY_generate_key(ecdh);
+        if (f != NULL) {
+            PEM_write_ECPrivateKey(f, ecdh, NULL, NULL, 512, NULL, NULL);
+        }
+        fclose(f);
+        f = NULL;
+    } else {
+        ecdh = PEM_read_ECPrivateKey(f, NULL, NULL, NULL);        
+        fclose(f);
+        f = NULL;
+    }
+    
     point = EC_KEY_get0_public_key(ecdh);  
     group = EC_KEY_get0_group(ecdh);  
     if(0 == (len = EC_POINT_point2oct(group, point, POINT_CONVERSION_COMPRESSED, pubkey, ECDH_SIZE, NULL))) handleErrors();  
