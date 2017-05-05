@@ -32,6 +32,8 @@ int main() {
     unsigned char shared[ECDH_SIZE];  
     int len;  
     FILE *f  = NULL;
+    FILE *filep = NULL;
+    unsigned char txt[66] = {0};
     //Generate Public  
     ecdh = EC_KEY_new();
     ecdh = EC_KEY_new_by_curve_name(NID_secp256k1);
@@ -50,7 +52,16 @@ int main() {
         fclose(f);
         f = NULL;
     }
-    
+    filep = fopen("pubkey.txt", "r");
+    if(filep != NULL) {
+        int i = 0;
+        for (i=0;fscanf(filep, "%c", txt+i)!=EOF;i++);
+        hex2byte(pubkey2, txt, ECDH_SIZE);
+    }
+    printf("%s", txt);
+    fclose(filep);
+    filep = NULL;
+    printf("\n");
     point = EC_KEY_get0_public_key(ecdh);  
     group = EC_KEY_get0_group(ecdh);  
     if(0 == (len = EC_POINT_point2oct(group, point, POINT_CONVERSION_COMPRESSED, pubkey, ECDH_SIZE, NULL))) handleErrors();  
@@ -63,3 +74,11 @@ int main() {
     EC_KEY_free(ecdh);  
     return 0;  
 } 
+
+int hex2byte(unsigned char *dst, unsigned char *src, unsigned int len) {
+    int i = 0;
+    for(i=0;i<len;i++) {
+        sscanf(src+2*i, "%02X", dst+i);
+    }
+    return 0;
+}
